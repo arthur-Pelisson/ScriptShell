@@ -1,2 +1,2 @@
 # ScriptShell
-ScriptShellJ java with logs
+ScriptShell java with logs

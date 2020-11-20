@@ -1,0 +1,61 @@
+#!/bin/bash
+
+LOG_FILE=Java.logs
+var_path=$PWD
+USERDATE="[${USER}][`date`]"
+PACKAGE=devscripts
+
+if ! command -v annotate-output &> /dev/null
+then
+
+    echo "Command could not be found"
+    echo "Package '$PACKAGE' is NOT installed! do you want to install it ? press [y, n]"
+	read input
+	if [ "$input" == "" ]
+	then
+	
+		echo "nothing was entered by the user"
+	
+	elif [[ "$input" == "y" ]] || [[ "$input" == "yes" ]]
+	then
+
+		sudo apt-get install $PACKAGE --no-install-recommends
+
+	else
+
+	echo "Negative response: $input"
+
+	fi
+fi
+
+cd $var_path
+
+(
+	if [ ! -f $LOG_FILE ]
+	then
+		touch Java.logs
+		echo $USERDATE" : Creation of logs file 'Java.logs'"
+	fi
+
+
+	if [ -z $1 ]
+	then
+		echo $USERDATE" : i need a file in argument"
+
+	elif [ $1 = "help" ]
+	then
+		echo $USERDATE " : " `basename $0` "[file to compile]"
+
+	elif [ ${1##*\.} != "java" ]
+	then
+		echo $USERDATE" : The argument need to be a valide java file"
+		echo $USERDATE" : This file is a ."${1##*\.} "file"
+
+	else
+
+		annotate-output javac $1
+		annotate-output java ${1%.java}
+
+	fi
+) 2>&1 | tee -a $LOG_FILE
+
